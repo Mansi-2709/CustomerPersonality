@@ -33,10 +33,11 @@ margin-bottom:40px;
 }
 
 .card {
-background-color: linear-gradient(120deg,#667eea,#764ba2);
+background: linear-gradient(120deg,#667eea,#764ba2);
+color:white;
 padding:25px;
 border-radius:15px;
-box-shadow:0px 6px 18px rgba(0,0,0,0.2);
+box-shadow:0px 6px 18px rgba(0,0,0,0.25);
 margin-bottom:20px;
 }
 
@@ -44,11 +45,12 @@ margin-bottom:20px;
 font-size:26px;
 font-weight:600;
 margin-bottom:10px;
+color:white;
 }
 
 .card-text{
 font-size:18px;
-color:#333333;
+color:white;
 }
 
 .feature-card{
