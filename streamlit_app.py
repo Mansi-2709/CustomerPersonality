@@ -33,7 +33,7 @@ margin-bottom:40px;
 }
 
 .card {
-background-color:white;
+background-color:linear-gradient(120deg,#667eea,#764ba2);
 padding:25px;
 border-radius:15px;
 box-shadow:0px 6px 18px rgba(0,0,0,0.2);
