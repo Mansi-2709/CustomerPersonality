@@ -1,9 +1,6 @@
 import streamlit as st
 import pandas as pd
 
-st.markdown("""
-<style>
-
 st.set_page_config(
     page_title="Customer Personality Analysis",
     page_icon="📊",
