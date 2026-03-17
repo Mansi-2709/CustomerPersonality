@@ -1,16 +1,6 @@
-st.markdown("""
-<style>
-
-.stApp {
-background: linear-gradient(135deg,#667eea,#764ba2,#6dd5ed);
-background-size: 400% 400%;
-animation: gradientMove 12s ease infinite;
-}
-
-@keyframes gradientMove {
-0% {background-position:0% 50%;}
-50% {background-position:100% 50%;}
-100% {background-position:0% 50%;}
-}
-</style>
-""", unsafe_allow_html=True)
+[theme]
+primaryColor="#800080"
+backgroundColor="#9370DB"
+secondaryBackgroundColor="#0E594D"
+textColor="#FFFCFC"
+font="sans serif"
