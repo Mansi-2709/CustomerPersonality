@@ -5,7 +5,9 @@ st.markdown("""
 <style>
 
 /* Remove Streamlit header completely */
-header {visibility: hidden;}
+header[data-testid="stHeader"] {
+    height: 0px;
+}
 
 /* Remove default padding */
 .block-container {
