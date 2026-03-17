@@ -1,22 +1,28 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 
-st.set_page_config(page_title="Data Explorer", layout="wide")
+st.set_page_config(
+    page_title="Data Explorer",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# -------------------------
-# Load Data
-# -------------------------
+# --------------------------
+# Load Dataset
+# --------------------------
 
 df = pd.read_csv('https://raw.githubusercontent.com/Mansi-2709/CustomerPersonality/refs/heads/master/marketing_campaign.csv')
 
 df["Age"] = 2026 - df["Year_Birth"]
+
 spend_cols = [c for c in df.columns if "Mnt" in c]
 df["Total_Spend"] = df[spend_cols].sum(axis=1)
 
-# -------------------------
-# CSS Styling (Same Theme)
-# -------------------------
+df["Income"].fillna(df["Income"].median(), inplace=True)
+
+# --------------------------
+# CSS (Same Theme)
+# --------------------------
 
 st.markdown("""
 <style>
@@ -44,33 +50,44 @@ color:white;
 margin-bottom:25px;
 }
 
+.kpi-card {
+background: rgba(255,255,255,0.12);
+border-radius:16px;
+padding:20px;
+backdrop-filter: blur(10px);
+border:1px solid rgba(255,255,255,0.25);
+text-align:center;
+color:white;
+}
+
 .section-title {
-font-size:30px;
+font-size:28px;
 font-weight:600;
 color:white;
-margin-bottom:15px;
+margin-top:20px;
+margin-bottom:10px;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# -------------------------
-# Page Title
-# -------------------------
+# --------------------------
+# Page Header
+# --------------------------
 
 st.markdown("""
 <div class="glass-card">
 
 <h1>📂 Data Explorer</h1>
 
-Explore customer demographic and purchasing data interactively using filters and statistical summaries.
+Explore customer demographic and purchase data using filters and summary statistics.
 
 </div>
 """, unsafe_allow_html=True)
 
-# -------------------------
+# --------------------------
 # Sidebar Filters
-# -------------------------
+# --------------------------
 
 st.sidebar.header("🔎 Filter Data")
 
@@ -89,20 +106,20 @@ income_range = st.sidebar.slider(
 )
 
 education = st.sidebar.multiselect(
-    "Education Level",
-    options=df["Education"].unique(),
+    "Education",
+    df["Education"].unique(),
     default=df["Education"].unique()
 )
 
 marital = st.sidebar.multiselect(
     "Marital Status",
-    options=df["Marital_Status"].unique(),
+    df["Marital_Status"].unique(),
     default=df["Marital_Status"].unique()
 )
 
-# -------------------------
+# --------------------------
 # Apply Filters
-# -------------------------
+# --------------------------
 
 filtered_df = df[
     (df["Age"].between(age_range[0], age_range[1])) &
@@ -111,72 +128,79 @@ filtered_df = df[
     (df["Marital_Status"].isin(marital))
 ]
 
-# -------------------------
-# Summary Statistics
-# -------------------------
+# --------------------------
+# KPI Cards
+# --------------------------
 
-st.markdown('<div class="section-title">📊 Summary Statistics</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-title">Key Metrics</div>', unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns(3)
+c1, c2, c3, c4 = st.columns(4)
 
-with col1:
-    st.metric("Total Customers", len(filtered_df))
-
-with col2:
-    st.metric("Average Income", round(filtered_df["Income"].mean(),2))
-
-with col3:
-    st.metric("Average Spending", round(filtered_df["Total_Spend"].mean(),2))
-
-# -------------------------
-# Data Table
-# -------------------------
-
-st.markdown('<div class="section-title">📋 Dataset Preview</div>', unsafe_allow_html=True)
-
-st.dataframe(filtered_df, use_container_width=True)
-
-# -------------------------
-# Visualizations
-# -------------------------
-
-st.markdown('<div class="section-title">📈 Quick Visualizations</div>', unsafe_allow_html=True)
-
-c1, c2 = st.columns(2)
-
-# Age Distribution
 with c1:
-    fig = px.histogram(
-        filtered_df,
-        x="Age",
-        nbins=20,
-        title="Age Distribution"
-    )
-    st.plotly_chart(fig, use_container_width=True)
+    st.markdown(f"""
+    <div class="kpi-card">
+    <h4>Total Customers</h4>
+    <h2>{len(filtered_df)}</h2>
+    </div>
+    """, unsafe_allow_html=True)
 
-# Spending Boxplot
 with c2:
-    fig = px.box(
-        filtered_df,
-        x="Education",
-        y="Total_Spend",
-        title="Spending by Education"
-    )
-    st.plotly_chart(fig, use_container_width=True)
+    st.markdown(f"""
+    <div class="kpi-card">
+    <h4>Average Income</h4>
+    <h2>{round(filtered_df["Income"].mean(),2)}</h2>
+    </div>
+    """, unsafe_allow_html=True)
 
-# -------------------------
-# Correlation Heatmap
-# -------------------------
+with c3:
+    st.markdown(f"""
+    <div class="kpi-card">
+    <h4>Average Spending</h4>
+    <h2>{round(filtered_df["Total_Spend"].mean(),2)}</h2>
+    </div>
+    """, unsafe_allow_html=True)
 
-st.markdown('<div class="section-title">🔥 Correlation Heatmap</div>', unsafe_allow_html=True)
+with c4:
+    st.markdown(f"""
+    <div class="kpi-card">
+    <h4>Average Age</h4>
+    <h2>{round(filtered_df["Age"].mean(),1)}</h2>
+    </div>
+    """, unsafe_allow_html=True)
 
-corr = filtered_df.select_dtypes(include="number").corr()
+# --------------------------
+# Dataset Info
+# --------------------------
 
-fig = px.imshow(
-    corr,
-    text_auto=True,
-    aspect="auto",
-    title="Feature Correlation Matrix"
+st.markdown('<div class="section-title">Dataset Information</div>', unsafe_allow_html=True)
+
+c1, c2, c3 = st.columns(3)
+
+c1.metric("Rows", filtered_df.shape[0])
+c2.metric("Columns", filtered_df.shape[1])
+c3.metric("Missing Values", filtered_df.isna().sum().sum())
+
+# --------------------------
+# Data Table
+# --------------------------
+
+st.markdown('<div class="section-title">Filtered Dataset</div>', unsafe_allow_html=True)
+
+st.dataframe(
+    filtered_df,
+    use_container_width=True,
+    height=500
 )
 
-st.plotly_chart(fig, use_container_width=True)
+# --------------------------
+# Download Data
+# --------------------------
+
+csv = filtered_df.to_csv(index=False)
+
+st.download_button(
+    "Download Filtered Data",
+    csv,
+    "filtered_customers.csv",
+    "text/csv"
+)
