@@ -1,6 +1,25 @@
 import streamlit as st
 import pandas as pd
 
+st.markdown("""
+<style>
+
+/* Remove Streamlit header completely */
+header {visibility: hidden;}
+
+/* Remove default padding */
+.block-container {
+    padding-top: 0rem;
+}
+
+/* Remove whitespace above title */
+section.main > div {
+    padding-top: 0rem;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 st.set_page_config(
     page_title="Customer Personality Analysis",
     page_icon="📊",
