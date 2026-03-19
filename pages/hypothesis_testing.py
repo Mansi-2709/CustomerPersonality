@@ -15,7 +15,7 @@ st.set_page_config(
 # Load Data
 # -------------------------
 
-df = pd.read_csv("marketing_campaign.csv", sep="\t")
+df = pd.read_csv("https://raw.githubusercontent.com/Mansi-2709/CustomerPersonality/refs/heads/master/marketing_campaign.csv")
 
 df["Age"] = 2026 - df["Year_Birth"]
 spend_cols = [c for c in df.columns if "Mnt" in c]
