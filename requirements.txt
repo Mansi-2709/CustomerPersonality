@@ -4,4 +4,4 @@ pandas
 scipy
 scikit-learn
 plotly
-stats
+statsmodels
