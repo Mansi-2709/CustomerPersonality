@@ -220,8 +220,8 @@ if st.button("Run Chi-Square"):
     st.markdown(f"""
     <div class="card">
     <h4>📌 Hypothesis</h4>
-    H₀: Variables are independent<br>
-    H₁: Variables are associated
+    H₀: Marital status is independent of campaign acceptance<br>
+    H₁: Marital status is associated with campaign acceptance
 
     <h4>📊 Result</h4>
     Chi² = {round(chi2,4)} <br>
