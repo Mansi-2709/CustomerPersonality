@@ -2,24 +2,28 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from scipy import stats
-import statsmodels.api as sm
-from statsmodels.formula.api import ols
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
 
 st.set_page_config(
     page_title="Hypothesis Testing",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
 # -------------------------
 # Load Data
 # -------------------------
 
-df = pd.read_csv("https://raw.githubusercontent.com/Mansi-2709/CustomerPersonality/refs/heads/master/marketing_campaign.csv")
+df = pd.read_csv('https://raw.githubusercontent.com/Mansi-2709/CustomerPersonality/refs/heads/master/marketing_campaign.csv')
 
+# Feature Engineering (EXACT)
 df["Age"] = 2026 - df["Year_Birth"]
-spend_cols = [c for c in df.columns if "Mnt" in c]
+
+spend_cols = [col for col in df.columns if "Mnt" in col]
 df["Total_Spend"] = df[spend_cols].sum(axis=1)
+
+campaign_cols = [col for col in df.columns if "AcceptedCmp" in col]
+df["Total_Campaign_Response"] = df[campaign_cols].sum(axis=1)
+
 df["Income"].fillna(df["Income"].median(), inplace=True)
 
 # -------------------------
@@ -30,36 +34,27 @@ st.markdown("""
 <style>
 .stApp {
 background: linear-gradient(135deg,#667eea,#764ba2,#6dd5ed);
-background-size: 400% 400%;
-animation: gradientMove 12s ease infinite;
 }
 
-@keyframes gradientMove {
-0% {background-position:0% 50%;}
-50% {background-position:100% 50%;}
-100% {background-position:0% 50%;}
-}
-
-.glass-card {
+.glass {
 background: rgba(255,255,255,0.15);
-border-radius:18px;
-padding:25px;
-backdrop-filter: blur(14px);
-border:1px solid rgba(255,255,255,0.3);
-box-shadow:0 8px 32px rgba(0,0,0,0.25);
+padding: 25px;
+border-radius: 16px;
+backdrop-filter: blur(12px);
+border: 1px solid rgba(255,255,255,0.3);
+margin-bottom:20px;
 color:white;
-margin-bottom:25px;
 }
 
-.result-card {
-background: rgba(255,255,255,0.12);
-border-radius:16px;
-padding:20px;
-backdrop-filter: blur(10px);
-border:1px solid rgba(255,255,255,0.25);
+.card {
+background: rgba(255,255,255,0.1);
+padding: 20px;
+border-radius: 14px;
+border: 1px solid rgba(255,255,255,0.2);
 color:white;
-margin-top:20px;
+margin-top:15px;
 }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -68,177 +63,177 @@ margin-top:20px;
 # -------------------------
 
 st.markdown("""
-<div class="glass-card">
+<div class="glass">
 <h1>🧪 Hypothesis Testing Dashboard</h1>
-Run statistical tests to uncover significant relationships.
+<p>Business-driven statistical analysis on customer behavior</p>
 </div>
 """, unsafe_allow_html=True)
 
-# -------------------------
-# Select Test
-# -------------------------
+# =========================================================
+# 1️⃣ Z-TEST (Income vs Spending)
+# =========================================================
 
-test_type = st.selectbox(
-    "Select Test",
-    ["T-Test", "One-Way ANOVA", "Two-Way ANOVA", "Chi-Square"]
-)
+st.markdown("## 1️⃣ Z-Test: Income vs Spending")
 
-numeric_cols = df.select_dtypes(include=np.number).columns.tolist()
-categorical_cols = df.select_dtypes(include="object").columns.tolist()
+if st.button("Run Z-Test"):
 
-# -------------------------
-# Dynamic Inputs
-# -------------------------
+    median_income = df["Income"].median()
 
-if test_type == "T-Test":
+    high_income = df[df["Income"] > median_income]["Total_Spend"]
+    low_income = df[df["Income"] <= median_income]["Total_Spend"]
 
-    col = st.selectbox("Numeric Variable", numeric_cols)
-    group = st.selectbox("Grouping Variable", categorical_cols)
+    mean1, mean2 = high_income.mean(), low_income.mean()
+    std1, std2 = high_income.std(), low_income.std()
+    n1, n2 = len(high_income), len(low_income)
 
-    categories = df[group].dropna().unique()
-    cat1 = st.selectbox("Group 1", categories)
-    cat2 = st.selectbox("Group 2", categories, index=1)
+    se = np.sqrt((std1**2 / n1) + (std2**2 / n2))
 
-elif test_type == "One-Way ANOVA":
-
-    col = st.selectbox("Numeric Variable", numeric_cols)
-    group = st.selectbox("Categorical Variable", categorical_cols)
-
-elif test_type == "Two-Way ANOVA":
-
-    col = st.selectbox("Numeric Variable", numeric_cols)
-    factor1 = st.selectbox("Factor 1", categorical_cols)
-    factor2 = st.selectbox("Factor 2", categorical_cols, index=1)
-
-elif test_type == "Chi-Square":
-
-    var1 = st.selectbox("Variable 1", categorical_cols)
-    var2 = st.selectbox("Variable 2", categorical_cols, index=1)
-
-# -------------------------
-# Run Test
-# -------------------------
-
-if st.button("Run Test"):
-
-    alpha = 0.05
-
-    # -------------------------
-    # Hypothesis + Explanation
-    # -------------------------
-
-    if test_type == "T-Test":
-
-        H0 = "Means of two groups are equal"
-        H1 = "Means of two groups are different"
-        why = "Used to compare means between two independent groups."
-
-        g1 = df[df[group] == cat1][col]
-        g2 = df[df[group] == cat2][col]
-
-        n1, n2 = len(g1), len(g2)
-
-        # Assumptions
-        norm1 = stats.shapiro(g1)[1]
-        norm2 = stats.shapiro(g2)[1]
-        levene_p = stats.levene(g1, g2)[1]
-
-        t_stat, p_val = stats.ttest_ind(g1, g2, equal_var=False)
-
-        result = f"T = {round(t_stat,4)}, p = {round(p_val,4)}"
-
-    elif test_type == "One-Way ANOVA":
-
-        H0 = "All group means are equal"
-        H1 = "At least one group mean differs"
-        why = "Used to compare means across multiple groups."
-
-        groups = [g[col].values for _, g in df.groupby(group)]
-        sizes = [len(g) for g in groups]
-
-        f_stat, p_val = stats.f_oneway(*groups)
-
-        # Assumption
-        levene_p = stats.levene(*groups)[1]
-
-        result = f"F = {round(f_stat,4)}, p = {round(p_val,4)}"
-
-    elif test_type == "Two-Way ANOVA":
-
-        H0 = "No effect of factors and no interaction"
-        H1 = "At least one factor or interaction is significant"
-        why = "Tests effect of two categorical variables and their interaction."
-
-        formula = f"{col} ~ C({factor1}) + C({factor2}) + C({factor1}):C({factor2})"
-        model = ols(formula, data=df).fit()
-        anova_table = sm.stats.anova_lm(model, typ=2)
-
-        result = anova_table.to_string()
-        p_val = anova_table["PR(>F)"].min()
-
-    elif test_type == "Chi-Square":
-
-        H0 = "Variables are independent"
-        H1 = "Variables are associated"
-        why = "Tests relationship between categorical variables."
-
-        contingency = pd.crosstab(df[var1], df[var2])
-        chi2, p_val, _, _ = stats.chi2_contingency(contingency)
-
-        result = f"Chi2 = {round(chi2,4)}, p = {round(p_val,4)}"
-
-    # -------------------------
-    # Interpretation
-    # -------------------------
-
-    conclusion = "Reject H₀ → Significant result" if p_val < alpha else "Fail to Reject H₀ → Not significant"
-
-    # -------------------------
-    # Display Output
-    # -------------------------
+    z_stat = (mean1 - mean2) / se
+    p_value = 2 * (1 - stats.norm.cdf(abs(z_stat)))
 
     st.markdown(f"""
-    <div class="result-card">
+    <div class="card">
+    <h4>📌 Hypothesis</h4>
+    H₀: High income and low income customers spend equally<br>
+    H₁: Spending differs between income groups
 
-    <h3>📌 Hypothesis</h3>
-    <p><b>H₀:</b> {H0}</p>
-    <p><b>H₁:</b> {H1}</p>
+    <h4>📊 Result</h4>
+    Z = {round(z_stat,4)} <br>
+    p-value = {round(p_value,4)}
 
-    <h3>📊 Test Result</h3>
-    <p>{result}</p>
+    <h4>📈 Means</h4>
+    High Income: {round(mean1,2)} <br>
+    Low Income: {round(mean2,2)}
 
-    <h3>🧠 Interpretation</h3>
-    <p>{conclusion}</p>
+    <h4>🧠 Conclusion</h4>
+    {"Reject H₀ → Significant difference" if p_value < 0.05 else "Fail to reject H₀"}
 
-    <h3>📖 Why this test?</h3>
-    <p>{why}</p>
-
+    <h4>📖 Why this test?</h4>
+    Z-test compares means between two large independent groups.
     </div>
     """, unsafe_allow_html=True)
 
-    # -------------------------
-    # Assumptions Panel
-    # -------------------------
+# =========================================================
+# 2️⃣ T-TEST (Campaign vs Spending)
+# =========================================================
 
-    if test_type in ["T-Test", "One-Way ANOVA"]:
+st.markdown("## 2️⃣ T-Test: Campaign Impact")
 
-        st.markdown(f"""
-        <div class="result-card">
+if st.button("Run T-Test"):
 
-        <h3>⚙️ Assumption Checks</h3>
+    accepted = df[df["Total_Campaign_Response"] > 0]["Total_Spend"]
+    not_accepted = df[df["Total_Campaign_Response"] == 0]["Total_Spend"]
 
-        <p><b>Normality p-values:</b> {round(norm1,4) if test_type=='T-Test' else 'Multiple groups'}</p>
-        <p><b>Equal Variance (Levene Test p-value):</b> {round(levene_p,4)}</p>
+    t_stat, p_value = stats.ttest_ind(accepted, not_accepted, equal_var=False)
 
-        </div>
-        """, unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="card">
+    <h4>📌 Hypothesis</h4>
+    H₀: Campaign has no impact on spending<br>
+    H₁: Campaign affects spending
 
-    # -------------------------
-    # Sample Size
-    # -------------------------
+    <h4>📊 Result</h4>
+    T = {round(t_stat,4)} <br>
+    p-value = {round(p_value,4)}
 
-    if test_type == "T-Test":
-        st.info(f"Sample Sizes → {cat1}: {n1}, {cat2}: {n2}")
+    <h4>📈 Means</h4>
+    Accepted: {round(accepted.mean(),2)} <br>
+    Not Accepted: {round(not_accepted.mean(),2)}
 
-    elif test_type == "One-Way ANOVA":
-        st.info(f"Group Sizes: {sizes}")
+    <h4>🧠 Conclusion</h4>
+    {"Reject H₀" if p_value < 0.05 else "Fail to reject H₀"}
+
+    <h4>📖 Why this test?</h4>
+    T-test compares means between two independent groups.
+    </div>
+    """, unsafe_allow_html=True)
+
+# =========================================================
+# 3️⃣ ANOVA (Education vs Spending)
+# =========================================================
+
+st.markdown("## 3️⃣ ANOVA: Education vs Spending")
+
+if st.button("Run ANOVA"):
+
+    groups = [g["Total_Spend"].values for _, g in df.groupby("Education")]
+
+    f_stat, p_value = stats.f_oneway(*groups)
+
+    st.markdown(f"""
+    <div class="card">
+    <h4>📌 Hypothesis</h4>
+    H₀: All education groups spend equally<br>
+    H₁: At least one group differs
+
+    <h4>📊 Result</h4>
+    F = {round(f_stat,4)} <br>
+    p-value = {round(p_value,4)}
+
+    <h4>🧠 Conclusion</h4>
+    {"Reject H₀" if p_value < 0.05 else "Fail to reject H₀"}
+
+    <h4>📖 Why this test?</h4>
+    ANOVA compares means across multiple groups.
+    </div>
+    """, unsafe_allow_html=True)
+
+# -------------------------
+# Tukey Test
+# -------------------------
+
+if st.button("Run Tukey Test"):
+
+    tukey = pairwise_tukeyhsd(
+        endog=df["Total_Spend"],
+        groups=df["Education"],
+        alpha=0.05
+    )
+
+    st.markdown("""
+    <div class="card">
+    <h4>📊 Tukey Post-Hoc Results</h4>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.text(tukey)
+
+# =========================================================
+# 4️⃣ CHI-SQUARE
+# =========================================================
+
+st.markdown("## 4️⃣ Chi-Square: Marital Status vs Campaign")
+
+if st.button("Run Chi-Square"):
+
+    df["Campaign_Accepted"] = np.where(
+        df["Total_Campaign_Response"] > 0, "Yes", "No"
+    )
+
+    contingency = pd.crosstab(
+        df["Marital_Status"],
+        df["Campaign_Accepted"]
+    )
+
+    chi2, p_value, dof, expected = stats.chi2_contingency(contingency)
+
+    st.markdown(f"""
+    <div class="card">
+    <h4>📌 Hypothesis</h4>
+    H₀: Variables are independent<br>
+    H₁: Variables are associated
+
+    <h4>📊 Result</h4>
+    Chi² = {round(chi2,4)} <br>
+    p-value = {round(p_value,4)}
+
+    <h4>🧠 Conclusion</h4>
+    {"Reject H₀" if p_value < 0.05 else "Fail to reject H₀"}
+
+    <h4>📖 Why this test?</h4>
+    Chi-square tests relationship between categorical variables.
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.write("### Contingency Table")
+    st.dataframe(contingency)
