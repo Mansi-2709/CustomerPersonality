@@ -1,6 +1,12 @@
 import streamlit as st
 import pandas as pd
 
+st.markdown("""
+<style>
+[data-testid="stSidebar"] {display: none;}
+</style>
+""", unsafe_allow_html=True)
+
 st.set_page_config(
     page_title="Customer Personality Analysis",
     page_icon="📊",
@@ -138,38 +144,53 @@ This dataset enables **behavioral segmentation and statistical inference analysi
 
 st.markdown("### 🔎 Explore the Application")
 
-c1, c2, c3 = st.columns(3)
+c1, c2 = st.columns(2)
+c3, c4 = st.columns(2)
 
+# ---------- CARD 1 ----------
 with c1:
     st.markdown("""
-    <div class="feature-card">
+    <div class="card">
     <h3>📂 Data Explorer</h3>
-    <p>Interactively explore the dataset with filters and summary statistics.</p>
+    <p>Explore dataset with filters, KPIs, and structured views</p>
     </div>
     """, unsafe_allow_html=True)
 
+    if st.button("Open Data Explorer"):
+        st.switch_page("pages/DataExplorer.py")
+
+# ---------- CARD 2 ----------
 with c2:
     st.markdown("""
-    <div class="feature-card">
+    <div class="card">
     <h3>🧪 Hypothesis Testing</h3>
-    <p>Run statistical tests dynamically including T-Test, ANOVA, and Chi-Square.</p>
+    <p>Run statistical tests and validate business assumptions</p>
     </div>
     """, unsafe_allow_html=True)
 
+    if st.button("Open Hypothesis Testing"):
+        st.switch_page("pages/hypothesis_testing.py")
+
+# ---------- CARD 3 ----------
 with c3:
     st.markdown("""
-    <div class="feature-card">
-    <h3>📊 Visual Analytics</h3>
-    <p>Analyze patterns using histograms, boxplots, bar charts, and correlation heatmaps.</p>
+    <div class="card">
+    <h3>📈 Data Visualization</h3>
+    <p>Understand trends through interactive visual analysis</p>
     </div>
     """, unsafe_allow_html=True)
 
-# -------------------------
-# Footer
-# -------------------------
+    if st.button("Open Visualization"):
+        st.switch_page("pages/Visualization.py")
 
-st.markdown("""
-<center style='color:white;margin-top:40px'>
-Built with Streamlit • Customer Statistical Analysis Project
-</center>
-""", unsafe_allow_html=True)
+# ---------- CARD 4 ----------
+with c4:
+    st.markdown("""
+    <div class="card">
+    <h3>💡 Insights</h3>
+    <p>Business insights and strategic recommendations</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if st.button("Open Insights"):
+        st.switch_page("pages/Insights.py")
