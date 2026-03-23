@@ -142,7 +142,7 @@ This dataset enables **behavioral segmentation and statistical inference analysi
 
 st.markdown("### 🔎 Explore the Application")
 
-col1, col2 = st.columns(2, gap="large")
+c1, c2 = st.columns(2, gap="large")
 
 with c1:
     st.markdown("""
@@ -161,7 +161,7 @@ with c2:
     """, unsafe_allow_html=True)
 
 st.markdown('<div class="row-gap"></div>', unsafe_allow_html=True)
-col3, col4 = st.columns(2, gap="large")
+c3, c4 = st.columns(2, gap="large")
 
 with c3:
     st.markdown("""
