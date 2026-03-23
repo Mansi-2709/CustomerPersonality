@@ -14,6 +14,10 @@ st.set_page_config(
 st.markdown("""
 <style>
 
+.row-gap {
+margin-top: 25px;
+}
+
 .stApp {
 background: linear-gradient(135deg,#667eea,#764ba2,#6dd5ed);
 background-size: 400% 400%;
@@ -138,8 +142,7 @@ This dataset enables **behavioral segmentation and statistical inference analysi
 
 st.markdown("### 🔎 Explore the Application")
 
-c1, c2 = st.columns(2)
-c3, c4 = st.columns(2)
+col1, col2 = st.columns(2, gap="large")
 
 with c1:
     st.markdown("""
@@ -156,6 +159,9 @@ with c2:
     <p>Run statistical tests dynamically including T-Test, ANOVA, and Chi-Square.</p>
     </div>
     """, unsafe_allow_html=True)
+
+st.markdown('<div class="row-gap"></div>', unsafe_allow_html=True)
+col3, col4 = st.columns(2, gap="large")
 
 with c3:
     st.markdown("""
