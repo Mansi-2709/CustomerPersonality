@@ -143,32 +143,42 @@ c3, c4 = st.columns(2)
 
 with c1:
     st.markdown("""
-    <div class="card">
+    <div class="feature-card">
     <h3>📂 Data Explorer</h3>
-    <p>Filter, inspect, and understand customer data with KPIs and structured views.</p>
+    <p>Interactively explore the dataset with filters and summary statistics.</p>
     </div>
     """, unsafe_allow_html=True)
 
 with c2:
     st.markdown("""
-    <div class="card">
+    <div class="feature-card">
     <h3>🧪 Hypothesis Testing</h3>
-    <p>Validate business assumptions using statistical tests and inference.</p>
+    <p>Run statistical tests dynamically including T-Test, ANOVA, and Chi-Square.</p>
     </div>
     """, unsafe_allow_html=True)
 
 with c3:
     st.markdown("""
-    <div class="card">
-    <h3>📈 Data Visualization</h3>
-    <p>Explore trends and patterns through visual storytelling.</p>
+    <div class="feature-card">
+    <h3>📊 Visual Analytics</h3>
+    <p>Analyze patterns using histograms, boxplots, bar charts, and correlation heatmaps.</p>
     </div>
     """, unsafe_allow_html=True)
 
 with c4:
     st.markdown("""
-    <div class="card">
+    <div class="feature-card">
     <h3>💡 Insights</h3>
     <p>Translate analysis into actionable business strategies.</p>
     </div>
     """, unsafe_allow_html=True)
+
+# -------------------------
+# Footer
+# -------------------------
+
+st.markdown("""
+<center style='color:white;margin-top:40px'>
+Built with Streamlit • Customer Statistical Analysis Project
+</center>
+""", unsafe_allow_html=True)
