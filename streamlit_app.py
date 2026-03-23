@@ -1,12 +1,6 @@
 import streamlit as st
 import pandas as pd
 
-st.markdown("""
-<style>
-[data-testid="stSidebar"] {display: none;}
-</style>
-""", unsafe_allow_html=True)
-
 st.set_page_config(
     page_title="Customer Personality Analysis",
     page_icon="📊",
@@ -147,50 +141,34 @@ st.markdown("### 🔎 Explore the Application")
 c1, c2 = st.columns(2)
 c3, c4 = st.columns(2)
 
-# ---------- CARD 1 ----------
 with c1:
     st.markdown("""
     <div class="card">
     <h3>📂 Data Explorer</h3>
-    <p>Explore dataset with filters, KPIs, and structured views</p>
+    <p>Filter, inspect, and understand customer data with KPIs and structured views.</p>
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("Open Data Explorer"):
-        st.switch_page("pages/DataExplorer.py")
-
-# ---------- CARD 2 ----------
 with c2:
     st.markdown("""
     <div class="card">
     <h3>🧪 Hypothesis Testing</h3>
-    <p>Run statistical tests and validate business assumptions</p>
+    <p>Validate business assumptions using statistical tests and inference.</p>
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("Open Hypothesis Testing"):
-        st.switch_page("pages/hypothesis_testing.py")
-
-# ---------- CARD 3 ----------
 with c3:
     st.markdown("""
     <div class="card">
     <h3>📈 Data Visualization</h3>
-    <p>Understand trends through interactive visual analysis</p>
+    <p>Explore trends and patterns through visual storytelling.</p>
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("Open Visualization"):
-        st.switch_page("pages/Visualization.py")
-
-# ---------- CARD 4 ----------
 with c4:
     st.markdown("""
     <div class="card">
     <h3>💡 Insights</h3>
-    <p>Business insights and strategic recommendations</p>
+    <p>Translate analysis into actionable business strategies.</p>
     </div>
     """, unsafe_allow_html=True)
-
-    if st.button("Open Insights"):
-        st.switch_page("pages/Insights.py")
