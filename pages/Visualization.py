@@ -25,11 +25,6 @@ animation: gradientMove 12s ease infinite;
 100% {background-position:0% 50%;}
 }
 
-/* Remove top gap */
-.block-container {
-padding-top: 1rem;
-}
-
 /* Titles */
 .main-title {
 text-align:center;
