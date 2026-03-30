@@ -71,20 +71,6 @@ transform: translateY(-6px) scale(1.01);
 box-shadow:0 20px 60px rgba(0,0,0,0.35);
 }
 
-/* Titles inside cards */
-.card-title {
-font-size:20px;
-font-weight:600;
-margin-bottom:10px;
-}
-
-/* Insight text */
-.card-desc {
-font-size:14px;
-color:rgba(255,255,255,0.85);
-margin-bottom:15px;
-line-height:1.6;
-}
 
 /* Fade animation */
 .fade-in {
@@ -146,9 +132,12 @@ def style_fig(fig):
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown('<div class="glass-card fade-in">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">💰 Total Spend vs Marital Status</div>', unsafe_allow_html=True)
-    st.markdown('<div class="card-desc">Compare spending behavior across marital groups segmented by education level.</div>', unsafe_allow_html=True)
+    st.markdown("""
+<div class="glass-card fade-in">
+<h1>💰 Total Spend vs Marital Status</h1>
+<p>Compare spending behavior across marital groups segmented by education level</p>
+</div>
+""", unsafe_allow_html=True)
 
     fig1 = px.histogram(
         df,
@@ -161,9 +150,12 @@ with col1:
     st.markdown('</div>', unsafe_allow_html=True)
 
 with col2:
-    st.markdown('<div class="glass-card fade-in">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">📈 Income vs Spending</div>', unsafe_allow_html=True)
-    st.markdown('<div class="card-desc">Identify high-value customers and observe spending patterns relative to income.</div>', unsafe_allow_html=True)
+    st.markdown("""
+<div class="glass-card fade-in">
+<h1>📈 Income vs Spending</h1>
+<p>Identify high-value customers and observe spending patterns relative to income</p>
+</div>
+""", unsafe_allow_html=True)
 
     fig2 = px.scatter(
         df,
