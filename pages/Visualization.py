@@ -132,7 +132,10 @@ def style_fig(fig):
         font=dict(color="white"),
         margin=dict(l=10, r=10, t=10, b=10)
     )
-    fig.update_traces(marker_line_color="white", marker_line_width=1)
+    for trace in fig.data:
+        if trace.type in ["bar", "histogram", "scatter"]:
+            trace.marker.line.color = "white"
+            trace.marker.line.width = 1
     return fig
 
 # --------------------------
