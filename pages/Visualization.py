@@ -5,52 +5,113 @@ import plotly.express as px
 st.set_page_config(layout="wide")
 
 # --------------------------
-# 🌌 GLOBAL GLASS THEME
+# 🌈 PREMIUM THEME UPGRADE
 # --------------------------
 st.markdown("""
 <style>
 
-/* App background */
 .stApp {
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    color: white;
+background: linear-gradient(135deg,#667eea,#764ba2,#6dd5ed);
+background-size: 400% 400%;
+animation: gradientMove 12s ease infinite;
 }
 
-/* Glass Card */
-.glass-card {
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    padding: 20px;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    margin-bottom: 25px;
+@keyframes gradientMove {
+0% {background-position:0% 50%;}
+50% {background-position:100% 50%;}
+100% {background-position:0% 50%;}
+}
+
+/* Remove top gap */
+.block-container {
+padding-top: 1rem;
 }
 
 /* Titles */
-.card-title {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 10px;
+.main-title {
+text-align:center;
+font-size:52px;
+font-weight:700;
+color:white;
+margin-bottom:5px;
 }
 
-/* Section spacing */
-.section {
-    margin-top: 10px;
+.subtitle {
+text-align:center;
+font-size:20px;
+color:rgba(255,255,255,0.85);
+margin-bottom:35px;
+}
+
+/* GRID */
+.row {
+display: flex;
+gap: 25px;
+margin-bottom: 25px;
+}
+
+.col {
+flex: 1;
+}
+
+/* GLASS CARD PREMIUM */
+.glass-card {
+background: rgba(255,255,255,0.12);
+border-radius:20px;
+padding:25px;
+backdrop-filter: blur(18px);
+-webkit-backdrop-filter: blur(18px);
+border:1px solid rgba(255,255,255,0.25);
+box-shadow:0 10px 40px rgba(0,0,0,0.25);
+color:white;
+transition: all 0.35s ease;
+}
+
+/* Hover Effect */
+.glass-card:hover {
+transform: translateY(-6px) scale(1.01);
+box-shadow:0 20px 60px rgba(0,0,0,0.35);
+}
+
+/* Titles inside cards */
+.card-title {
+font-size:20px;
+font-weight:600;
+margin-bottom:10px;
+}
+
+/* Insight text */
+.card-desc {
+font-size:14px;
+color:rgba(255,255,255,0.85);
+margin-bottom:15px;
+line-height:1.6;
+}
+
+/* Fade animation */
+.fade-in {
+animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+0% {opacity:0; transform:translateY(10px);}
+100% {opacity:1; transform:translateY(0);}
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 # --------------------------
-# LOAD DATA
+# HEADER
 # --------------------------
-df = pd.read_csv('https://raw.githubusercontent.com/Mansi-2709/CustomerPersonality/refs/heads/master/marketing_campaign.csv')
+st.markdown('<div class="main-title fade-in">📊 Data Visualization</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle fade-in">Customer Personality Analysis Dashboard</div>', unsafe_allow_html=True)
 
 # --------------------------
-# FEATURE ENGINEERING
+# LOAD DATA
 # --------------------------
+df = pd.read_csv('C:/Users/91701/Downloads/marketing/marketing_campaign.csv')
+
 df["Age"] = 2026 - df["Year_Birth"]
 
 spend_cols = [col for col in df.columns if "Mnt" in col]
@@ -62,192 +123,129 @@ df["Total_Campaign_Response"] = df[campaign_cols].sum(axis=1)
 df["Income"].fillna(df["Income"].median(), inplace=True)
 
 # --------------------------
-# HEADER
+# COMMON STYLE
 # --------------------------
-st.markdown("<h1 style='text-align:center;'>📊 Data Visualization</h1>", unsafe_allow_html=True)
-
-# --------------------------
-# 1️⃣ TOTAL SPEND vs MARITAL STATUS (YOUR GRAPH)
-# --------------------------
-st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-st.markdown('<div class="card-title">💰 Total Spend vs Marital Status</div>', unsafe_allow_html=True)
-
-fig1 = px.histogram(
-    df,
-    x="Marital_Status",
-    y="Total_Spend",
-    color="Education",
-    barmode="group"
-)
-
-fig1.update_traces(marker_line_color="white", marker_line_width=1)
-
-fig1.update_layout(
-    plot_bgcolor="rgba(0,0,0,0)",
-    paper_bgcolor="rgba(0,0,0,0)",
-    font=dict(color="white")
-)
-
-st.plotly_chart(fig1, use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
-
-# --------------------------
-# 2️⃣ INCOME VS SPEND
-# --------------------------
-st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-st.markdown('<div class="card-title">📈 Income vs Spending</div>', unsafe_allow_html=True)
-
-fig2 = px.scatter(
-    df,
-    x="Income",
-    y="Total_Spend",
-    color="NumDealsPurchases",
-    size="Total_Campaign_Response",
-    hover_data=["NumDealsPurchases"]
-)
-
-fig2.update_xaxes(range=[0, 100000])
-
-fig2.update_layout(
-    plot_bgcolor="rgba(0,0,0,0)",
-    paper_bgcolor="rgba(0,0,0,0)",
-    font=dict(color="white")
-)
-
-st.plotly_chart(fig2, use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
-
-# --------------------------
-# 3️⃣ PRODUCT SPENDING (PIVOT)
-# --------------------------
-st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-st.markdown('<div class="card-title">🛒 Spending by Education</div>', unsafe_allow_html=True)
-
-pivot = pd.pivot_table(
-    df,
-    index="Education",
-    values=[
-        "MntWines","MntFruits","MntMeatProducts",
-        "MntFishProducts","MntSweetProducts","MntGoldProds"
-    ],
-    aggfunc="sum"
-).reset_index()
-
-fig3 = px.bar(
-    pivot,
-    x="Education",
-    y=[
-        "MntWines","MntFruits","MntMeatProducts",
-        "MntFishProducts","MntSweetProducts","MntGoldProds"
-    ],
-    barmode="stack"
-)
-
-fig3.update_traces(marker_line_color="white", marker_line_width=1)
-
-fig3.update_layout(
-    plot_bgcolor="rgba(0,0,0,0)",
-    paper_bgcolor="rgba(0,0,0,0)",
-    font=dict(color="white")
-)
-
-st.plotly_chart(fig3, use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
-
-# --------------------------
-# 4️⃣ RECENCY DISTRIBUTION
-# --------------------------
-st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-st.markdown('<div class="card-title">⏳ Recency Distribution</div>', unsafe_allow_html=True)
-
-fig4 = px.histogram(df, x="Recency", nbins=30)
-
-fig4.update_traces(
-    marker=dict(
-        color="#5A67D8",
-        line=dict(color="white", width=1)
+def style_fig(fig):
+    fig.update_layout(
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="white"),
+        margin=dict(l=10, r=10, t=10, b=10)
     )
-)
-
-fig4.update_layout(
-    bargap=0.25,
-    plot_bgcolor="rgba(0,0,0,0)",
-    paper_bgcolor="rgba(0,0,0,0)",
-    font=dict(color="white")
-)
-
-st.plotly_chart(fig4, use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
+    fig.update_traces(marker_line_color="white", marker_line_width=1)
+    return fig
 
 # --------------------------
-# 5️⃣ HEATMAP
+# ROW 1
 # --------------------------
-st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-st.markdown('<div class="card-title">🔥 Purchase Correlation</div>', unsafe_allow_html=True)
+col1, col2 = st.columns(2)
 
-cols = [
-    "NumDealsPurchases",
-    "NumWebPurchases",
-    "NumCatalogPurchases",
-    "NumStorePurchases",
-    "NumWebVisitsMonth"
-]
+with col1:
+    st.markdown('<div class="glass-card fade-in">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">💰 Total Spend vs Marital Status</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-desc">Compare spending behavior across marital groups segmented by education level.</div>', unsafe_allow_html=True)
 
-corr = df[cols].corr()
+    fig1 = px.histogram(
+        df,
+        x="Marital_Status",
+        y="Total_Spend",
+        color="Education",
+        barmode="group"
+    )
+    st.plotly_chart(style_fig(fig1), use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-fig5 = px.imshow(
-    corr,
-    text_auto=True,
-    color_continuous_scale="RdBu",
-    zmin=-1, zmax=1
-)
+with col2:
+    st.markdown('<div class="glass-card fade-in">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">📈 Income vs Spending</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-desc">Identify high-value customers and observe spending patterns relative to income.</div>', unsafe_allow_html=True)
 
-fig5.update_layout(
-    plot_bgcolor="rgba(0,0,0,0)",
-    paper_bgcolor="rgba(0,0,0,0)",
-    font=dict(color="white")
-)
+    fig2 = px.scatter(
+        df,
+        x="Income",
+        y="Total_Spend",
+        color="NumDealsPurchases",
+        size="Total_Campaign_Response"
+    )
+    fig2.update_xaxes(range=[0, 100000])
 
-st.plotly_chart(fig5, use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
+    st.plotly_chart(style_fig(fig2), use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # --------------------------
-# 6️⃣ CHANNEL DISTRIBUTION
+# ROW 2
 # --------------------------
-st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-st.markdown('<div class="card-title">🛍️ Purchase Channels</div>', unsafe_allow_html=True)
+col3, col4 = st.columns(2)
 
-channel_df = pd.pivot_table(
-    df,
-    index="Total_Campaign_Response",
-    values=[
-        "NumDealsPurchases",
-        "NumWebPurchases",
-        "NumCatalogPurchases",
-        "NumStorePurchases"
-    ],
-    aggfunc="sum"
-).reset_index()
+with col3:
+    st.markdown('<div class="glass-card fade-in">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">🛒 Spending by Education</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-desc">Breakdown of product category spending across education levels.</div>', unsafe_allow_html=True)
 
-fig6 = px.bar(
-    channel_df,
-    y="Total_Campaign_Response",
-    x=[
-        "NumDealsPurchases",
-        "NumWebPurchases",
-        "NumCatalogPurchases",
-        "NumStorePurchases"
-    ],
-    orientation="h"
-)
+    pivot = pd.pivot_table(
+        df,
+        index="Education",
+        values=[
+            "MntWines","MntFruits","MntMeatProducts",
+            "MntFishProducts","MntSweetProducts","MntGoldProds"
+        ],
+        aggfunc="sum"
+    ).reset_index()
 
-fig6.update_traces(marker_line_color="white", marker_line_width=1)
+    fig3 = px.bar(pivot, x="Education", y=pivot.columns[1:], barmode="stack")
+    st.plotly_chart(style_fig(fig3), use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-fig6.update_layout(
-    plot_bgcolor="rgba(0,0,0,0)",
-    paper_bgcolor="rgba(0,0,0,0)",
-    font=dict(color="white")
-)
+with col4:
+    st.markdown('<div class="glass-card fade-in">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">⏳ Recency Distribution</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-desc">Understand how recently customers interacted with the business.</div>', unsafe_allow_html=True)
 
-st.plotly_chart(fig6, use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
+    fig4 = px.histogram(df, x="Recency", nbins=30)
+    st.plotly_chart(style_fig(fig4), use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# --------------------------
+# ROW 3
+# --------------------------
+col5, col6 = st.columns(2)
+
+with col5:
+    st.markdown('<div class="glass-card fade-in">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">🔥 Purchase Correlation</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-desc">Correlation between different purchase channels.</div>', unsafe_allow_html=True)
+
+    cols = [
+        "NumDealsPurchases","NumWebPurchases",
+        "NumCatalogPurchases","NumStorePurchases",
+        "NumWebVisitsMonth"
+    ]
+
+    fig5 = px.imshow(df[cols].corr(), text_auto=True, color_continuous_scale="RdBu", zmin=-1, zmax=1)
+    st.plotly_chart(style_fig(fig5), use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with col6:
+    st.markdown('<div class="glass-card fade-in">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">🛍️ Purchase Channels</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-desc">Channel preference based on campaign response levels.</div>', unsafe_allow_html=True)
+
+    channel_df = pd.pivot_table(
+        df,
+        index="Total_Campaign_Response",
+        values=[
+            "NumDealsPurchases","NumWebPurchases",
+            "NumCatalogPurchases","NumStorePurchases"
+        ],
+        aggfunc="sum"
+    ).reset_index()
+
+    fig6 = px.bar(
+        channel_df,
+        y="Total_Campaign_Response",
+        x=channel_df.columns[1:],
+        orientation="h"
+    )
+
+    st.plotly_chart(style_fig(fig6), use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
