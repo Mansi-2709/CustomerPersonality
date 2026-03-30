@@ -2,7 +2,10 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.set_page_config(layout="wide")
+st.set_page_config(
+    page_title="Visualization",
+    layout="wide"
+)
 
 # --------------------------
 # 🌈 PREMIUM THEME UPGRADE
@@ -104,8 +107,12 @@ animation: fadeIn 1s ease-in-out;
 # --------------------------
 # HEADER
 # --------------------------
-st.markdown('<div class="main-title fade-in">📊 Data Visualization</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle fade-in">Customer Personality Analysis Dashboard</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="glass">
+<h1>📊 Data Visualization</h1>
+<p>Customer Personality Analysis Dashboard</p>
+</div>
+""", unsafe_allow_html=True)
 
 # --------------------------
 # LOAD DATA
