@@ -108,7 +108,7 @@ animation: fadeIn 1s ease-in-out;
 # HEADER
 # --------------------------
 st.markdown("""
-<div class="glass">
+<div class="glass-card fade-in">
 <h1>📊 Data Visualization</h1>
 <p>Customer Personality Analysis Dashboard</p>
 </div>
