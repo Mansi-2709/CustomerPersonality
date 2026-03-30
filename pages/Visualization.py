@@ -110,7 +110,7 @@ st.markdown('<div class="subtitle fade-in">Customer Personality Analysis Dashboa
 # --------------------------
 # LOAD DATA
 # --------------------------
-df = pd.read_csv('C:/Users/91701/Downloads/marketing/marketing_campaign.csv')
+df = pd.read_csv('https://raw.githubusercontent.com/Mansi-2709/CustomerPersonality/refs/heads/master/marketing_campaign.csv')
 
 df["Age"] = 2026 - df["Year_Birth"]
 
